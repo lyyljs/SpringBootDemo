@@ -40,12 +40,12 @@ public class SecurityFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) sresponse;
 		String uri = request.getRequestURI();
 		if (request.getSession().getAttribute(Const.LOGIN_SESSION_KEY) == null) {
-			if (GreenUrlSet.contains(uri)){
-				logger.debug("url in white list :" + request.getRequestURI());
+			if (GreenUrlSet.contains(uri) || containsSuffix(uri) || containsKey(uri)){
+				logger.debug("url in white list :" + uri);
 				filterChain.doFilter(srequest, sresponse);
 				return;
 			}
-			logger.debug("url not in white list :" + request.getRequestURI());
+			logger.debug("url not in white list :" + uri);
 			response.sendRedirect("/"); 
 		}
 		filterChain.doFilter(srequest, sresponse);
@@ -56,5 +56,34 @@ public class SecurityFilter implements Filter {
 		GreenUrlSet.add("/");
 		GreenUrlSet.add("/user/login");
 	}
+	
+	private boolean containsKey(String url) {
 
+		if (url.contains("/swagger-resources")
+				|| url.contains("/v2/api-docs")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean containsSuffix(String url) {
+		if (url.endsWith(".js")
+				|| url.endsWith(".css")
+				|| url.endsWith(".jpg")
+				|| url.endsWith(".gif")
+				|| url.endsWith(".png")
+				|| url.endsWith(".html")
+				|| url.endsWith(".eot")
+				|| url.endsWith(".svg")
+				|| url.endsWith(".ttf")
+				|| url.endsWith(".woff")
+				|| url.endsWith(".ico")
+				|| url.endsWith(".woff2")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 }

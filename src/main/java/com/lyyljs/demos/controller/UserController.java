@@ -18,23 +18,34 @@ import com.lyyljs.demos.domain.result.ResponseData;
 import com.lyyljs.demos.domain.result.ResponseMsg;
 import com.lyyljs.demos.service.UserService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
+@Api(value="USER") 
 @RestController
 @RequestMapping("/user")
 public class UserController extends BaseController{
 	@Resource
 	private UserService userService;
 	
-	@RequestMapping(value="/getAll")
+	@RequestMapping(value="/getAll", method = RequestMethod.GET)
 	@MethodDescription(description="getAll")
 	public ResponseData getAllUsers(){
 		List<User> list = userService.getAllUsers();
 		return new ResponseData(ResponseMsg.SUCCESS, list);
 	}
 	
-	@RequestMapping(value="/login")
+	@ApiOperation(value="用户登陆", notes="账号密码登陆")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "userName", value = "账号", paramType = "form", required = true, dataType = "String"),
+        @ApiImplicitParam(name = "userPasswd", value = "密码", paramType = "form",required = true, dataType = "String")
+	})
+	@RequestMapping(value="/login", method = RequestMethod.POST)
 	@MethodDescription(description="login")
-	public Response login(User user, HttpServletResponse response){
-		User loginUser = userService.haveUser(user.getName(), MD5Util.encrypt(user.getPasswd()));
+	public Response login(String userName, String userPasswd, HttpServletResponse response){
+		User loginUser = userService.haveUser(userName, MD5Util.encrypt(userPasswd));
 		if (loginUser == null){
 			return new Response(ResponseMsg.LoginNameOrPassWordError);
 		}

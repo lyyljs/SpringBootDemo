@@ -15,7 +15,7 @@ public class ScheduledTasks {
 	
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	
-	@Scheduled(cron="1-10 * * * * ?")
+	@Scheduled(cron="1-2 * * * * ?")
 	@MethodDescription(description="定时任务测试")
 	public void reportCurrentTime(){
 		logger.info("现在时间：" + dateFormat.format(new Date()));

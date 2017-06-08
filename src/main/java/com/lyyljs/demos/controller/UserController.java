@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
-@Api(value="USER") 
+@Api(tags = "USER", description="user controller test") 
 @RestController
 @RequestMapping("/user")
 public class UserController extends BaseController{
@@ -39,8 +39,8 @@ public class UserController extends BaseController{
 	
 	@ApiOperation(value="用户登陆", notes="账号密码登陆")
 	@ApiImplicitParams({
-        @ApiImplicitParam(name = "userName", value = "账号", paramType = "form", required = true, dataType = "String"),
-        @ApiImplicitParam(name = "userPasswd", value = "密码", paramType = "form",required = true, dataType = "String")
+        @ApiImplicitParam(name = "userName", value = "账号", paramType = "query", required = true, dataType = "String"),
+        @ApiImplicitParam(name = "userPasswd", value = "密码", paramType = "query",required = true, dataType = "String")
 	})
 	@RequestMapping(value="/login", method = RequestMethod.POST)
 	@MethodDescription(description="login")

@@ -1,12 +1,15 @@
 package com.lyyljs.demos.controller;
 
+import java.io.File;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lyyljs.demos.common.Const;
@@ -22,6 +25,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @Api(tags = "USER", description="user controller test") 
 @RestController
@@ -31,7 +35,6 @@ public class UserController extends BaseController{
 	private UserService userService;
 	
 	@RequestMapping(value="/getAll", method = RequestMethod.GET)
-	@MethodDescription(description="getAll")
 	public ResponseData getAllUsers(){
 		List<User> list = userService.getAllUsers();
 		return new ResponseData(ResponseMsg.SUCCESS, list);
@@ -39,12 +42,16 @@ public class UserController extends BaseController{
 	
 	@ApiOperation(value="用户登陆", notes="账号密码登陆")
 	@ApiImplicitParams({
-        @ApiImplicitParam(name = "userName", value = "账号", paramType = "query", required = true, dataType = "String"),
-        @ApiImplicitParam(name = "userPasswd", value = "密码", paramType = "query",required = true, dataType = "String")
+        @ApiImplicitParam(name = "userName", value = "账号", paramType = "query", required = true, dataType = "string"),
+        @ApiImplicitParam(name = "userPasswd", value = "密码", paramType = "query",required = true, dataType = "string"),
+        @ApiImplicitParam(name = "testInteger", value = "密码", paramType = "query", dataType = "int", allowableValues="range[ins,22]"),
+        @ApiImplicitParam(name = "testDouble", value = "密码", paramType = "query", dataType = "double", allowableValues="1, 2, 3.3"),
+        @ApiImplicitParam(name = "testB", value = "密码", paramType = "query", dataType = "boolean", defaultValue="true"),
 	})
-	@RequestMapping(value="/login", method = RequestMethod.POST)
-	@MethodDescription(description="login")
-	public Response login(String userName, String userPasswd, HttpServletResponse response){
+	@RequestMapping(value="/login", method = RequestMethod.GET)
+	public Response login(String userName, String userPasswd, 
+			Integer testInteger, Double testDouble, Boolean testB, 
+			HttpServletResponse response){
 		User loginUser = userService.haveUser(userName, MD5Util.encrypt(userPasswd));
 		if (loginUser == null){
 			return new Response(ResponseMsg.LoginNameOrPassWordError);

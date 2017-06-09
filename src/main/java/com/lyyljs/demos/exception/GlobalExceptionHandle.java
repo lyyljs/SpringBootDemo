@@ -26,7 +26,7 @@ public class GlobalExceptionHandle {
 	
 	@ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public ResponseData jsonErrorHandler(HttpServletRequest req, MyException e) throws Exception {
+    public ResponseData jsonErrorHandler(HttpServletRequest req, Exception e) throws Exception {
 		logger.info("请求地址：" + req.getRequestURL());
 		logger.error("异常信息：",e);
 		return new ResponseData(ResponseMsg.FAILED, e);

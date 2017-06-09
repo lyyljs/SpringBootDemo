@@ -1,10 +1,10 @@
 package com.lyyljs.demos.exception;
 
-public class MyException extends Exception {
+public class AnnotationException extends Exception {
 	
 	private static final long serialVersionUID = 1L;
 
-	public MyException(String message) {
+	public AnnotationException(String message) {
         super(message);
     }
 	

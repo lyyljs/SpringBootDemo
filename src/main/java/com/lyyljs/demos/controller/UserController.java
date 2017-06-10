@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lyyljs.demos.common.Const;
 import com.lyyljs.demos.common.logger.MethodDescription;
 import com.lyyljs.demos.common.utils.MD5Util;
+import com.lyyljs.demos.common.utils.ParamsUtil;
 import com.lyyljs.demos.domain.User;
 import com.lyyljs.demos.domain.result.Response;
 import com.lyyljs.demos.domain.result.ResponseData;
@@ -43,7 +44,10 @@ public class UserController extends BaseController{
 	@ApiOperation(value="用户登陆", notes="账号密码登陆")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "userName", value = "账号", paramType = "query", required = true, dataType = "string"),
-        @ApiImplicitParam(name = "userPasswd", value = "密码", paramType = "query",required = true, dataType = "string"),
+        @ApiImplicitParam(name = "userPasswd", value = "密码", paramType = "query", 
+        			required = true, dataType = "string", 
+        			regPassPattern = {ParamsUtil.NumberRegPattern}, 
+        			regFilterPattern = {ParamsUtil.NonnegativeIntegerRegPattern}),
         @ApiImplicitParam(name = "testInteger", value = "密码", paramType = "query", dataType = "int", allowableValues="range[ins,22]"),
         @ApiImplicitParam(name = "testDouble", value = "密码", paramType = "query", dataType = "double", allowableValues="1, 2, 3.3"),
         @ApiImplicitParam(name = "testB", value = "密码", paramType = "query", dataType = "boolean", defaultValue="true"),

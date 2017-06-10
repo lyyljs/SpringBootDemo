@@ -8,17 +8,17 @@ public class ParamsUtil {
 	/**
 	 * 实数正则
 	 */
-	public static String numberRegPattern = "^-{0,}[0-9]{1,}(\\.{0,})[0-9]{0,}$";
+	public static final String NumberRegPattern = "^-{0,}[0-9]{1,}(\\.{0,})[0-9]{0,}$";
 	
 	/**
 	 * 非负整数正则
 	 */
-	public static String nonnegativeIntegerRegPattern = "^(0|[1-9][0-9]*)$";
+	public static final String NonnegativeIntegerRegPattern = "^(0|[1-9][0-9]*)$";
 	
 	/**
 	 * 非负实数正则
 	 */
-	public static String nonnegativeNumberRegPattern = "^[0-9]+(.[0-9]{0,})?$";
+	public static final String NonnegativeNumberRegPattern = "^[0-9]+(.[0-9]{0,})?$";
 	
 	/**
 	 * 判断是否为实数
@@ -26,16 +26,20 @@ public class ParamsUtil {
 	 * @return
 	 */
 	public static boolean isNumber(String str){
-		return patternMatch(numberRegPattern, str);
+		return patternMatch(NumberRegPattern, str);
+	}
+	
+	public static boolean isNonnegativeInteger(String str){
+		return patternMatch(NonnegativeIntegerRegPattern, str);
 	}
 	
 	public static boolean patternMatch(String regPattern, String str){
-		Pattern numberReg = Pattern.compile(regPattern);
-		Matcher matcher = numberReg.matcher(str);
+		Pattern pattern = Pattern.compile(regPattern);
+		Matcher matcher = pattern.matcher(str);
 		return matcher.find();
 	}
 	
 	public static void main(String[] args){
-		System.out.println(isNumber("-11"));
+		System.out.println(isNonnegativeInteger("-11"));
 	}
 }

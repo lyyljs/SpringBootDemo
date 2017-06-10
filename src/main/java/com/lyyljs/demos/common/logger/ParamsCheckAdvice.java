@@ -10,6 +10,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
+import com.lyyljs.demos.common.utils.ParamsUtil;
 import com.lyyljs.demos.common.utils.TypeUtil;
 import com.lyyljs.demos.domain.result.ResponseData;
 import com.lyyljs.demos.domain.result.ResponseMsg;
@@ -48,7 +49,14 @@ public class ParamsCheckAdvice {
 					}
 				}else{
 					
-					if (!checkAllowableValues(obj, apiImplicitParam.allowableValues())){// do with allowableValues
+					// do with allowableValues
+					if (!checkAllowableValues(obj, apiImplicitParam.allowableValues())){
+						return new ResponseData(ResponseMsg.ParameterError, apiImplicitParam.name());
+					}
+					
+					// do with regular expressions
+					if (!checkRegPassPattern(obj, apiImplicitParam.regPassPattern()) 
+							|| !checkRegFilterPattern(obj, apiImplicitParam.regFilterPattern())){
 						return new ResponseData(ResponseMsg.ParameterError, apiImplicitParam.name());
 					}
 					
@@ -62,6 +70,40 @@ public class ParamsCheckAdvice {
 		return returnValue;
 	}
 	
+	private boolean checkRegFilterPattern(Object obj, String[] regs){
+		if (regs.length == 0){
+			return true;
+		}
+		String str = obj.toString();
+		for (String reg : regs){
+			if (ParamsUtil.patternMatch(reg, str)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean checkRegPassPattern(Object obj, String[] regs){
+		if (regs.length == 0){
+			return true;
+		}
+		String str = obj.toString();
+		for (String reg : regs){
+			if (!ParamsUtil.patternMatch(reg, str)){
+				System.out.println("unpass find");
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * check AllowableValues
+	 * @param obj
+	 * @param allowValues
+	 * @return
+	 * @throws AnnotationException
+	 */
 	private boolean checkAllowableValues(Object obj, String allowValues) throws AnnotationException{
 		if (StringUtils.isBlank(allowValues)){
 			return true;
@@ -70,7 +112,7 @@ public class ParamsCheckAdvice {
 		Pattern numberReg = Pattern.compile(numberRegPattern);
 		String allowableValues[] = allowValues.split(",");
 		
-		if (TypeUtil.isNumberType(TypeUtil.getType(obj)) && 
+		if (TypeUtil.isNumberType(obj) && 
 				allowValues.contains("range")){ //do with range
 			if (allowableValues.length != 2)
 				throw new AnnotationException("Annotation Range Error");
@@ -83,14 +125,15 @@ public class ParamsCheckAdvice {
 			    		if (matcher.group(k) != null) break;
 			    	}
 			    	Double number = Double.parseDouble(matcher.group(k));
+			    	Double objValue = Double.parseDouble(obj.toString());
 			    	if (j == 0){
-			    		if (Double.parseDouble(obj.toString()) < number || 
-				    			(allowableValues[j].contains("(") && Double.parseDouble(obj.toString()) == number)){// be careful with accuracy
+			    		if (objValue < number || 
+				    			(allowableValues[j].contains("(") && objValue == number)){// be careful with accuracy
 			    			return false;
 				    	}
 			    	}else{
-			    		if (Double.parseDouble(obj.toString())  > number || 
-				    			(allowableValues[j].contains(")") && Double.parseDouble(obj.toString()) == number)){// be careful with accuracy
+			    		if (objValue  > number || 
+				    			(allowableValues[j].contains(")") && objValue == number)){// be careful with accuracy
 			    			return false;
 				    	}
 			    	}
@@ -110,7 +153,7 @@ public class ParamsCheckAdvice {
 					break;
 				}
 			}
-			if (TypeUtil.isNumberType(TypeUtil.getType(obj))){
+			if (TypeUtil.isNumberType(obj)){
 				if (Double.parseDouble(obj.toString()) ==  Double.parseDouble(allowableValues[j])){
 					eqFlag = true;
 					break;
@@ -125,13 +168,15 @@ public class ParamsCheckAdvice {
 	}
 	
 	private Object generateDefaultValue(ApiImplicitParam apiImplicitParam){
-		if (apiImplicitParam.dataType().equalsIgnoreCase("int")){
+		if (apiImplicitParam.dataType().equalsIgnoreCase(TypeUtil.TYPE_INT)){
 			return Integer.parseInt(apiImplicitParam.defaultValue());
-		}else if (apiImplicitParam.dataType().equalsIgnoreCase("double")){
+		}else if (apiImplicitParam.dataType().equalsIgnoreCase(TypeUtil.TYPE_LONG)){
+			return Long.parseLong(apiImplicitParam.defaultValue());
+		}else if (apiImplicitParam.dataType().equalsIgnoreCase(TypeUtil.TYPE_DOUBLE)){
 			return Double.parseDouble(apiImplicitParam.defaultValue());
-		}else if (apiImplicitParam.dataType().equalsIgnoreCase("boolean")){
+		}else if (apiImplicitParam.dataType().equalsIgnoreCase(TypeUtil.TYPE_BOOLEAN)){
 			return Boolean.parseBoolean(apiImplicitParam.defaultValue());
-		}else if (apiImplicitParam.dataType().equalsIgnoreCase("string")){
+		}else if (apiImplicitParam.dataType().equalsIgnoreCase(TypeUtil.TYPE_STRING)){
 			return apiImplicitParam.defaultValue();
 		}
 		return apiImplicitParam.defaultValue();

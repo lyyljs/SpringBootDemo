@@ -43,7 +43,12 @@ public class TypeUtil {
         return TYPE_STRING;  
     }
     
-    public static boolean isNumberType(String type){
+    public static boolean isStringType(Object obj){
+    	return getType(obj).equalsIgnoreCase(TYPE_STRING);
+    }
+    
+    public static boolean isNumberType(Object obj){
+    	String type = getType(obj);
     	if (type.equalsIgnoreCase(TYPE_INT) || type.equalsIgnoreCase(TYPE_DOUBLE) 
     			|| type.equalsIgnoreCase(TYPE_FLOAT) || type.equalsIgnoreCase(TYPE_LONG)
     			|| type.equalsIgnoreCase(TYPE_INTEGER))

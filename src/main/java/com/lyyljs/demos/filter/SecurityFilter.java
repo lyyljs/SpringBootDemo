@@ -47,6 +47,7 @@ public class SecurityFilter implements Filter {
 			}
 			logger.debug("url not in white list :" + uri);
 			response.sendRedirect("/"); 
+			return;
 		}
 		filterChain.doFilter(srequest, sresponse);
 	}
@@ -60,7 +61,8 @@ public class SecurityFilter implements Filter {
 	private boolean containsKey(String url) {
 
 		if (url.contains("/swagger-resources")
-				|| url.contains("/v2/api-docs")) {
+				|| url.contains("/v2/api-docs")
+				|| url.contains("/file")) {
 			return true;
 		} else {
 			return false;

@@ -27,6 +27,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Api(tags = "USER", description="user controller test") 
 @RestController
@@ -36,6 +38,9 @@ public class UserController extends BaseController{
 	private UserService userService;
 	
 	@RequestMapping(value="/getAll", method = RequestMethod.GET)
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Success", response = User.class)
+	})
 	public ResponseData getAllUsers(){
 		List<User> list = userService.getAllUsers();
 		return new ResponseData(ResponseMsg.SUCCESS, list);
